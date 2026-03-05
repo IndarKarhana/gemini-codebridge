@@ -1,0 +1,29 @@
+---
+description: Infrastructure and deployment rules for CodeBridge on GCP
+globs: infrastructure/**/*.tf
+alwaysApply: false
+---
+
+# Infrastructure Standards
+
+## Terraform
+
+- All GCP resources defined in Terraform — no manual console clicks
+- Use variables for anything environment-specific
+- State stored in GCS backend bucket
+- Run `terraform plan` before every `terraform apply`
+- Log every apply in `docs/run_log.md`
+
+## Docker
+
+- Multi-stage builds to minimize image size
+- Pin base image versions (e.g., `python:3.12-slim`, not `python:latest`)
+- Non-root user in production containers
+- `.dockerignore` must exclude `node_modules`, `.env`, `__pycache__`, `.git`
+
+## Google Cloud
+
+- Project ID and region set via environment variables
+- Cloud Run services must have health check endpoints
+- All secrets in Secret Manager — mounted as env vars in Cloud Run
+- Enable Cloud Logging and Cloud Trace on all services

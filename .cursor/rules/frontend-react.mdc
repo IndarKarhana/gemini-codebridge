@@ -1,0 +1,44 @@
+---
+description: React/TypeScript frontend coding standards for CodeBridge
+globs: frontend/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+# Frontend Standards
+
+## Framework
+
+- React 19 with TypeScript strict mode
+- Zustand for state management (no Redux)
+- Tailwind CSS for styling (no CSS modules, no styled-components)
+- Monaco Editor via `@monaco-editor/react` for code editing
+- LiveKit via `@livekit/components-react` for video/audio
+- MediaPipe via `@mediapipe/tasks-vision` for hand/face tracking
+
+## Component Rules
+
+- Functional components only — no class components
+- One component per file, file name matches component name
+- Props interfaces defined in the same file, named `{ComponentName}Props`
+- Use custom hooks for logic reuse — prefix with `use`
+- Colocate component-specific hooks in the same directory
+
+## TypeScript
+
+- `strict: true` in tsconfig — no exceptions
+- No `any` types — use `unknown` and narrow with type guards
+- All API response types defined in `frontend/src/types/`
+- Prefer `interface` for object shapes, `type` for unions/intersections
+
+## State Management
+
+- Zustand stores in `frontend/src/stores/`
+- One store per domain (session, code, communication)
+- Never put derived state in stores — compute it
+
+## Accessibility (Critical for This Project)
+
+- All interactive elements must be keyboard accessible
+- ARIA labels on all non-text elements
+- Minimum contrast ratio 4.5:1 (WCAG AA)
+- Caption text must be configurable (size, font, background opacity)
