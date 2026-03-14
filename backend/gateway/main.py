@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import os
 import sys
@@ -19,12 +20,46 @@ try:
     _yjs_ws_server = WebsocketServer()
     _yjs_app = ASGIServer(_yjs_ws_server)
 except ImportError:
+    _yjs_ws_server = None
     _yjs_app = None
+
+from contextlib import asynccontextmanager
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    import structlog
+    from backend.services.genai_client import is_vertex_configured
+
+    if _yjs_ws_server is not None:
+        # Per ypy-websocket docs: WebsocketServer must run as async context manager
+        async with _yjs_ws_server:
+            log = structlog.get_logger()
+            log.info(
+                "startup",
+                genai_configured=config.has_genai,
+                vertex_ai=is_vertex_configured(),
+                log_level=config.log_level,
+                yjs_started=True,
+            )
+            yield
+    else:
+        log = structlog.get_logger()
+        log.info(
+            "startup",
+            genai_configured=config.has_genai,
+            vertex_ai=is_vertex_configured(),
+            log_level=config.log_level,
+            yjs_started=False,
+        )
+        yield
+
 
 app = FastAPI(
     title="CodeBridge API",
     description="Real-time AI-powered pair programming for deaf and hearing developers",
     version="0.1.0",
+    lifespan=lifespan,
 )
 
 app.add_middleware(
@@ -58,6 +93,12 @@ if _yjs_app is not None:
     app.mount("/yjs", _yjs_app)
 
 
+@app.get("/debug/yjs")
+async def debug_yjs() -> dict:
+    """Verify Yjs WebSocket server is available. Connect to wss://host/yjs/codebridge for sync."""
+    return {"ok": True, "yjs_mounted": _yjs_app is not None}
+
+
 @app.get("/debug/caption/{session_id}")
 async def debug_send_caption(session_id: str, text: str = "Test caption") -> dict:
     """Send a test caption. Requires agent WS connected (click Start mic first)."""
@@ -66,19 +107,6 @@ async def debug_send_caption(session_id: str, text: str = "Test caption") -> dic
 
 
 
-
-
-@app.on_event("startup")
-async def startup():
-    import structlog
-    from backend.services.genai_client import is_vertex_configured
-    log = structlog.get_logger()
-    log.info(
-        "startup",
-        genai_configured=config.has_genai,
-        vertex_ai=is_vertex_configured(),
-        log_level=config.log_level,
-    )
 
 
 @app.websocket("/ws/media/{session_id}")

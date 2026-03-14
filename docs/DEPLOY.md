@@ -59,6 +59,10 @@ After deployment, the script prints the service URL. Use that as your **app link
 
 Example: `https://codebridge-api-dev-xxxxx-uc.a.run.app`
 
+### 5. Debug endpoints
+
+See [`docs/DEBUG.md`](DEBUG.md) for `/debug/yjs` and `/debug/caption/{session_id}`.
+
 ---
 
 ## Vertex AI (GCP billing) — avoids free-tier limits

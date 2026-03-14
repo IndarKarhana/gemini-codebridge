@@ -60,8 +60,10 @@ resource "google_cloud_run_v2_service" "api" {
     timeout = "300s"
 
     scaling {
-      min_instance_count = var.environment == "prod" ? 1 : 0
-      max_instance_count = var.environment == "prod" ? 10 : 2
+      # Single instance required for Yjs: all users must share same in-memory sync server.
+      # min=1 keeps instance warm so WebSocket connects (cold start causes "Connecting" to hang).
+      min_instance_count = 1
+      max_instance_count = 1
     }
   }
 }

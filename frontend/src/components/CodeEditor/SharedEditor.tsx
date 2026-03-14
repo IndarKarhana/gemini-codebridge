@@ -1,12 +1,12 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import Editor from "@monaco-editor/react";
 import * as Y from "yjs";
 import { WebsocketProvider } from "y-websocket";
 import { MonacoBinding } from "y-monaco";
 import type { editor } from "monaco-editor";
+import { useYjsStore } from "../../stores/yjsStore";
 
 const ROOM = "codebridge";
-type YjsStatus = "connecting" | "connected" | "disconnected";
 const DEFAULT_CODE = `# CodeBridge — Shared Editor
 # Both developers see the same code in real time.
 
@@ -27,7 +27,7 @@ export function SharedEditor() {
   const ydocRef = useRef<Y.Doc | null>(null);
   const providerRef = useRef<WebsocketProvider | null>(null);
   const bindingRef = useRef<MonacoBinding | null>(null);
-  const [yjsStatus, setYjsStatus] = useState<YjsStatus>("connecting");
+  const setYjsStatus = useYjsStore((s) => s.setStatus);
 
   const handleEditorMount = useCallback(
     (editor: editor.IStandaloneCodeEditor) => {
@@ -58,7 +58,8 @@ export function SharedEditor() {
     const provider = new WebsocketProvider(wsUrl, ROOM, ydoc);
     providerRef.current = provider;
 
-    const onStatus = (event: { status: YjsStatus }) => setYjsStatus(event.status);
+    const onStatus = (event: { status: "connecting" | "connected" | "disconnected" }) =>
+      setYjsStatus(event.status);
     provider.on("status", onStatus);
     if (provider.wsconnected) setYjsStatus("connected");
 
@@ -81,30 +82,12 @@ export function SharedEditor() {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex h-9 shrink-0 items-center gap-2 overflow-hidden border-b border-gray-800 px-3">
+      <div className="flex h-9 shrink-0 items-center gap-2 border-b border-gray-800 px-3">
         <span className="shrink-0 text-xs font-medium text-gray-400">Shared Editor</span>
         <div className="shrink-0 rounded bg-gray-800/80 px-2 py-0.5 text-[10px] text-gray-500">
           main.py
         </div>
         <span className="hidden shrink-0 text-[10px] text-gray-600 sm:inline">• Real-time sync via Yjs</span>
-        <span
-          className={`ml-auto shrink-0 rounded px-2 py-0.5 text-xs font-medium ${
-            yjsStatus === "connected"
-              ? "bg-emerald-500/20 text-emerald-400"
-              : yjsStatus === "connecting"
-                ? "bg-amber-500/20 text-amber-400"
-                : "bg-red-500/20 text-red-400"
-          }`}
-          title={
-            yjsStatus === "connected"
-              ? "Synced — edits appear in all tabs"
-              : yjsStatus === "connecting"
-                ? "Connecting to sync server…"
-                : "Disconnected — run `npm run yjs:server` for local dev"
-          }
-        >
-          {yjsStatus === "connected" ? "● Synced" : yjsStatus === "connecting" ? "○ Connecting…" : "○ Offline"}
-        </span>
       </div>
       <div className="flex-1">
         <Editor

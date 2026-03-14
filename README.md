@@ -166,6 +166,7 @@ After deployment, the service URL is printed. Open it in your browser — the ap
 ├── infrastructure/       # Terraform for GCP (Cloud Run, Firestore, etc.)
 ├── docs/
 │   ├── ARCHITECTURE.md   # Full system architecture (15 sections)
+│   ├── DEBUG.md          # Debug endpoints (/debug/yjs, /debug/caption)
 │   ├── progress.md       # Project status tracker
 │   ├── change_log.md     # Architecture decision log
 │   └── run_log.md        # Test/build/deploy log
