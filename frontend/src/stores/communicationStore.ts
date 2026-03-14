@@ -1,5 +1,11 @@
 import { create } from "zustand";
 
+interface CaptionItem {
+  id: string;
+  text: string;
+  speaker: string;
+}
+
 interface AgentMessage {
   id: string;
   type: "caption" | "code_highlight" | "disambiguation";
@@ -17,13 +23,27 @@ interface AgentMessage {
 
 interface CommunicationState {
   messages: AgentMessage[];
+  captions: CaptionItem[];
+  captionAudioEnabled: boolean;
   addMessage: (msg: AgentMessage) => void;
+  addCaption: (text: string, speaker: string) => void;
+  setCaptionAudioEnabled: (enabled: boolean) => void;
   clearMessages: () => void;
 }
 
 export const useCommunicationStore = create<CommunicationState>((set) => ({
   messages: [],
+  captions: [],
+  captionAudioEnabled: false,
   addMessage: (msg) =>
     set((state) => ({ messages: [...state.messages, msg] })),
-  clearMessages: () => set({ messages: [] }),
+  addCaption: (text, speaker = "hearing_dev") =>
+    set((state) => ({
+      captions: [
+        ...state.captions,
+        { id: crypto.randomUUID(), text, speaker },
+      ],
+    })),
+  setCaptionAudioEnabled: (enabled) => set({ captionAudioEnabled: enabled }),
+  clearMessages: () => set({ messages: [], captions: [] }),
 }));

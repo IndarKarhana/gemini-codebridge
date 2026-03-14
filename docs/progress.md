@@ -1,15 +1,16 @@
 # CodeBridge — Progress Tracker
 
-**Last Updated:** 2026-03-04 22:30
+**Last Updated:** 2026-03-14
 **Deadline:** 2026-03-16 17:00 PDT
 **Days Remaining:** ~12
 
 ---
 
-## Current Status: PROJECT SETUP
+## Current Status: MVP IN PROGRESS
 
 ### Completed
-- [x] **Voice → Captions pipeline (P0 #1)**: Gemini Live API + WebSocket + mic capture + live captions
+- [x] **Voice → Captions pipeline (P0 #1)**: Web Speech API fallback + WebSocket + mic capture + live captions
+- [x] **Shared Monaco editor with Yjs (P0 #3)**: Yjs CRDT sync, y-monaco binding, y-websocket server
 - [x] Hackathon idea validated and refined (Option A: Pair Programming for Deaf Devs)
 - [x] Architecture document v1.1 created (15 sections, full system design)
 - [x] Open-source ecosystem mapped (18 components, only 3 custom)
@@ -47,11 +48,11 @@
 
 | # | Feature | Status | Owner |
 |---|---------|--------|-------|
-| 1 | Gemini Live API audio processing (hearing dev → captions) | **Done** | |
-| 2 | Gemini Vision sign/gesture interpretation (deaf dev → speech) | Not started | |
-| 3 | Shared Monaco code editor with Yjs CRDT sync | Not started | |
+| 1 | Gemini Live API audio processing (hearing dev → captions) | **Done** (Web Speech fallback) | |
+| 2 | Deaf dev → speech (text input + Gemini TTS) | **Done** | |
+| 3 | Shared Monaco code editor with Yjs CRDT sync | **Done** | |
 | 4 | Code-context-aware reference resolution | Not started | |
-| 5 | Bridge Agent orchestration via ADK | Not started | |
+| 5 | Bridge Agent orchestration via ADK | **Done** (Bridge Service enriches voice/sign captions) | |
 | 6 | Rich visual captions with code highlights | Not started | |
 
 ## P1 Features (Should Ship)
@@ -70,6 +71,18 @@
 | 11 | Custom sign vocabulary | Not started |
 | 12 | Multilingual support | Not started |
 | 13 | Session recording (opt-in) | Not started |
+
+## Future: True ASL (American Sign Language) Support
+
+Current sign interpretation uses Gemini Vision on single static frames — recognizes common signs and gestures but is **not** a full ASL interpreter. Planned improvements:
+
+| Improvement | Description |
+|-------------|-------------|
+| Video sequences | Send 1–2 second clips instead of single frames; ASL relies on movement over time |
+| ASL-specific models | MediaPipe Gesture Recognizer with ASL vocabulary, or models trained on WLASL |
+| Hand + face landmarks | Pass MediaPipe landmark data to enrich interpretation (facial grammar, finger positions) |
+| Temporal modeling | Process sequences of hand shapes and movements for fingerspelling and complex signs |
+| Facial expression | ASL uses eyebrow raise, head tilt, etc. for grammar — integrate face mesh data |
 
 ---
 

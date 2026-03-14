@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" font-family="system-ui,sans-serif" font-size="12">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="800" y2="500" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0f172a"/>
+      <stop offset="1" stop-color="#1e293b"/>
+    </linearGradient>
+    <style>
+      .box { fill: #1e293b; stroke: #334155; stroke-width: 1; rx: 6; }
+      .title { fill: #94a3b8; font-size: 10; font-weight: 600; text-transform: uppercase; }
+      .label { fill: #e2e8f0; font-size: 11; }
+      .sub { fill: #64748b; font-size: 9; }
+      .arrow { stroke: #3b82f6; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+      .blue { fill: #3b82f6; }
+      .green { fill: #22c55e; }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#3b82f6"/>
+    </marker>
+  </defs>
+  <rect width="800" height="500" fill="url(#bg)"/>
+  <text x="400" y="28" text-anchor="middle" fill="#f8fafc" font-size="18" font-weight="600">CodeBridge Architecture</text>
+  <text x="400" y="48" text-anchor="middle" fill="#94a3b8" font-size="11">Pair programming for deaf &amp; hearing developers</text>
+
+  <!-- Frontend -->
+  <rect x="40" y="70" width="220" height="140" class="box"/>
+  <text x="150" y="92" text-anchor="middle" class="title">Frontend (React)</text>
+  <text x="150" y="110" text-anchor="middle" class="label">" Monaco Editor (shared code)</text>
+  <text x="150" y="125" text-anchor="middle" class="label">" Communication Panel</text>
+  <text x="150" y="140" text-anchor="middle" class="label">" Yjs CRDT sync</text>
+  <text x="150" y="155" text-anchor="middle" class="label">" Web Speech API</text>
+  <text x="150" y="175" text-anchor="middle" class="sub">VideoPanel (LiveKit placeholder)</text>
+
+  <!-- Backend -->
+  <rect x="300" y="70" width="200" height="140" class="box"/>
+  <text x="400" y="92" text-anchor="middle" class="title">Backend (FastAPI)</text>
+  <text x="400" y="110" text-anchor="middle" class="label">" WebSocket /ws/media</text>
+  <text x="400" y="125" text-anchor="middle" class="label">" WebSocket /ws/agent</text>
+  <text x="400" y="140" text-anchor="middle" class="label">" Gemini Live API</text>
+  <text x="400" y="155" text-anchor="middle" class="label">" Gemini TTS</text>
+  <text x="400" y="175" text-anchor="middle" class="sub">google-genai SDK</text>
+
+  <!-- Gemini -->
+  <rect x="540" y="70" width="220" height="140" class="box"/>
+  <text x="650" y="92" text-anchor="middle" class="title">Google AI (Gemini)</text>
+  <text x="650" y="110" text-anchor="middle" class="label">" Live API (audio ’ captions)</text>
+  <text x="650" y="125" text-anchor="middle" class="label">" TTS (text ’ speech)</text>
+  <text x="650" y="155" text-anchor="middle" class="sub">gemini-2.5-flash-*</text>
+
+  <!-- Arrows -->
+  <path d="M 260 140 L 298 140" class="arrow"/>
+  <path d="M 500 140 L 538 140" class="arrow"/>
+
+  <!-- Data flow -->
+  <rect x="40" y="250" width="720" height="120" class="box"/>
+  <text x="400" y="272" text-anchor="middle" class="title">Data Flow</text>
+  <text x="120" y="295" text-anchor="middle" class="label">Hearing Dev</text>
+  <text x="120" y="310" text-anchor="middle" class="sub">Mic ’ PCM ’ /ws/media</text>
+  <text x="120" y="330" text-anchor="middle" class="sub">’ Gemini Live ’ captions</text>
+  <text x="400" y="295" text-anchor="middle" class="label">Deaf Dev</text>
+  <text x="400" y="310" text-anchor="middle" class="sub">Type ’ /ws/agent</text>
+  <text x="400" y="330" text-anchor="middle" class="sub">’ Gemini TTS ’ speech</text>
+  <text x="680" y="295" text-anchor="middle" class="label">Shared Editor</text>
+  <text x="680" y="310" text-anchor="middle" class="sub">Yjs WebSocket</text>
+  <text x="680" y="330" text-anchor="middle" class="sub">Real-time CRDT</text>
+
+  <!-- GCP -->
+  <rect x="240" y="400" width="320" height="70" class="box"/>
+  <text x="400" y="422" text-anchor="middle" class="title">Google Cloud (Deploy)</text>
+  <text x="400" y="442" text-anchor="middle" class="label">Cloud Run " Terraform</text>
+  <text x="400" y="458" text-anchor="middle" class="sub">infrastructure/</text>
+</svg>

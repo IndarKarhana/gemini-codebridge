@@ -14,9 +14,15 @@ export default defineConfig({
     port: 3000,
     proxy: {
       "/api": "http://localhost:8080",
+      "/debug": "http://localhost:8080",
       "/ws": {
         target: "ws://localhost:8080",
         ws: true,
+      },
+      "/yjs": {
+        target: "http://localhost:1234",
+        ws: true,
+        rewrite: (path) => path.replace(/^\/yjs/, ""), // /yjs/codebridge -> /codebridge so room = "codebridge"
       },
     },
   },

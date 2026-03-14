@@ -2,33 +2,31 @@
 
 import asyncio
 import structlog
-from google import genai
 from google.genai import types
+
+from backend.services.genai_client import get_client, get_live_model
 
 logger = structlog.get_logger()
 
-# Model for native audio (transcription + optional TTS)
-GEMINI_LIVE_MODEL = "gemini-2.5-flash-native-audio-preview-12-2025"
 INPUT_SAMPLE_RATE = 16000
 
 
 async def run_voice_session(
-    api_key: str,
     audio_queue: asyncio.Queue[bytes],
     caption_callback: callable,
 ) -> None:
     """Run a Gemini Live session: receive PCM audio, emit transcriptions as captions.
 
+    Uses Vertex AI (GCP billing) when configured, else API key (free tier).
     Args:
-        api_key: Google API key for Gemini
         audio_queue: Queue of raw PCM 16-bit 16kHz audio chunks
         caption_callback: async fn(text: str) called when user speech is transcribed
     """
-    config = types.LiveConnectConfig(
-        response_modalities=[types.Modality.AUDIO],
-        input_audio_transcription=types.AudioTranscriptionConfig(),
-        output_audio_transcription=types.AudioTranscriptionConfig(),
-        system_instruction=types.Content(
+    # Use dict config to match Gemini Live API docs exactly
+    live_config = {
+        "response_modalities": ["AUDIO"],
+        "input_audio_transcription": {},
+        "system_instruction": types.Content(
             parts=[
                 types.Part(
                     text="You are CodeBridge, a pair programming communication assistant. "
@@ -37,12 +35,15 @@ async def run_voice_session(
                 )
             ]
         ),
-    )
+    }
 
-    client = genai.Client(api_key=api_key, http_options={"api_version": "v1alpha"})
+    client = get_client()
+    model = get_live_model()
 
-    async with client.aio.live.connect(model=GEMINI_LIVE_MODEL, config=config) as session:
+    async with client.aio.live.connect(model=model, config=live_config) as session:
         logger.info("gemini_live_session_started")
+
+        sent_count = [0]  # use list to allow mutation in closure
 
         async def send_audio() -> None:
             try:
@@ -50,6 +51,9 @@ async def run_voice_session(
                     chunk = await audio_queue.get()
                     if chunk is None:
                         break
+                    sent_count[0] += 1
+                    if sent_count[0] <= 3 or sent_count[0] % 50 == 0:
+                        logger.info("gemini_audio_sent", count=sent_count[0], bytes=len(chunk))
                     await session.send_realtime_input(
                         audio=types.Blob(
                             data=chunk,
@@ -59,22 +63,30 @@ async def run_voice_session(
             except asyncio.CancelledError:
                 pass
 
+        recv_count = [0]
+
         async def receive_loop() -> None:
             try:
                 async for response in session.receive():
                     if not response.server_content:
                         continue
                     sc = response.server_content
-                    if sc.input_transcription and sc.input_transcription.text:
-                        text = sc.input_transcription.text.strip()
+                    recv_count[0] += 1
+                    if recv_count[0] <= 5:
+                        has_input = hasattr(sc, "input_transcription") and sc.input_transcription
+                        logger.info("gemini_response", recv=recv_count[0], has_input_transcription=has_input)
+                    if hasattr(sc, "input_transcription") and sc.input_transcription:
+                        text = getattr(sc.input_transcription, "text", None) or ""
+                        text = (text or "").strip()
                         if text:
                             logger.info("transcription_received", text=text[:50])
                             if asyncio.iscoroutinefunction(caption_callback):
                                 await caption_callback(text)
                             else:
                                 caption_callback(text)
+                    # Also check for model_turn (model response) - we only want input transcription
             except Exception as e:
-                logger.error("gemini_receive_error", error=str(e))
+                logger.error("gemini_receive_error", error=str(e), exc_info=True)
                 raise
 
         send_task = asyncio.create_task(send_audio())

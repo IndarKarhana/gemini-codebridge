@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "yjs:server": "HOST=localhost PORT=1234 npx y-websocket",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "lint": "eslint .",
