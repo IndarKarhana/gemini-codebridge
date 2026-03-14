@@ -9,6 +9,7 @@
 ## Current Status: PROJECT SETUP
 
 ### Completed
+- [x] **Voice → Captions pipeline (P0 #1)**: Gemini Live API + WebSocket + mic capture + live captions
 - [x] Hackathon idea validated and refined (Option A: Pair Programming for Deaf Devs)
 - [x] Architecture document v1.1 created (15 sections, full system design)
 - [x] Open-source ecosystem mapped (18 components, only 3 custom)
@@ -46,7 +47,7 @@
 
 | # | Feature | Status | Owner |
 |---|---------|--------|-------|
-| 1 | Gemini Live API audio processing (hearing dev → captions) | Not started | |
+| 1 | Gemini Live API audio processing (hearing dev → captions) | **Done** | |
 | 2 | Gemini Vision sign/gesture interpretation (deaf dev → speech) | Not started | |
 | 3 | Shared Monaco code editor with Yjs CRDT sync | Not started | |
 | 4 | Code-context-aware reference resolution | Not started | |

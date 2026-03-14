@@ -98,20 +98,23 @@ See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the full 15-section archi
 git clone https://github.com/IndarKarhana/gemini-codebridge.git
 cd gemini-codebridge
 
-# Backend
-cd backend
+# 1. Create .env (copy from root)
 cp .env.example .env
-# Fill in your API keys in .env
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-uvicorn backend.gateway.main:app --reload --port 8080
+# Add your GOOGLE_API_KEY from https://aistudio.google.com/app/apikey
 
-# Frontend (in a new terminal)
+# 2. Backend
+python -m venv .venv
+source .venv/bin/activate   # or .venv\Scripts\activate on Windows
+pip install -r backend/requirements.txt
+PYTHONPATH=. uvicorn backend.gateway.main:app --reload --port 8080
+
+# 3. Frontend (new terminal)
 cd frontend
 npm install
 npm run dev
 ```
+
+Open http://localhost:3000 — click **Start mic** in the Communication panel, speak, and see live captions.
 
 ### Environment Variables
 
