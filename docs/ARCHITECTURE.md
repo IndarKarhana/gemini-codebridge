@@ -163,15 +163,15 @@ This is a critical architectural decision — we use MediaPipe and Gemini for **
 
 ```mermaid
 flowchart TD
-    A["Camera Feed (30 fps)"] --> B["MediaPipe (runs in browser, client-side, free)"]
-    B -->|Hand detected? No| C["Don't send to Gemini (save cost + latency)"]
+    A["Camera Feed - 30 fps"] --> B["MediaPipe - runs in browser, client-side, free"]
+    B -->|Hand detected? No| C["Skip Gemini - save cost and latency"]
     B -->|Hand detected? Yes| D["Extract landmarks"]
-    D --> D1["21 hand landmarks (x, y, z per hand)"]
+    D --> D1["21 hand landmarks - x, y, z per hand"]
     D --> D2["Hand openness / finger positions"]
-    D --> D3["478 face mesh landmarks (eyebrow, mouth, head tilt)"]
+    D --> D3["478 face mesh landmarks"]
     D --> D4["Pointing direction estimate"]
     D --> E["Package: landmarks + key video frames"]
-    E --> F["Gemini Live API (runs on Google Cloud, the brain)"]
+    E --> F["Gemini Live API - runs on Google Cloud"]
     F --> F1["Receives: video frames + structured landmark data"]
     F --> F2["Interprets sign language with code context"]
     F --> F3["Returns: structured intent with confidence score"]
@@ -228,32 +228,32 @@ WITH Yjs (20 lines of code):
 
 ```mermaid
 flowchart TD
-    subgraph Client["CLIENT LAYER (React + TypeScript)"]
-        VP["Video Panel\nLiveKit React + MediaPipe\n(hand/face landmarks, client-side)"]
-        CE["Code Editor\nMonaco Editor + Yjs CRDT\n+ Cursor Presence"]
-        CP["Communication Panel ★\nLive captions · Sign output\nCode highlights · Confidence scores\nConversation log"]
+    subgraph Client["CLIENT LAYER - React + TypeScript"]
+        VP["Video Panel<br/>LiveKit React + MediaPipe<br/>hand/face landmarks, client-side"]
+        CE["Code Editor<br/>Monaco Editor + Yjs CRDT<br/>+ Cursor Presence"]
+        CP["Communication Panel<br/>Live captions, Sign output<br/>Code highlights, Confidence scores<br/>Conversation log"]
     end
 
-    VP -->|"LiveKit WebRTC\n(audio+video tracks)"| GW
-    CE -->|"Yjs WebSocket\n(CRDT sync)"| GW
-    CP -->|"WebSocket\n(agent messages)"| GW
+    VP -->|LiveKit WebRTC| GW
+    CE -->|Yjs WebSocket| GW
+    CP -->|WebSocket| GW
 
     subgraph Cloud["GOOGLE CLOUD PLATFORM"]
-        GW["API GATEWAY (FastAPI on Cloud Run)\nAuthentication · Rate Limiting · Routing"]
+        GW["API GATEWAY - FastAPI on Cloud Run<br/>Authentication, Rate Limiting, Routing"]
 
-        subgraph Orchestrator["AGENT ORCHESTRATOR (Google ADK v1.26)"]
-            VA["VOICE AGENT\nGemini Live API (Audio)\nStream ASR · Intent extraction\nEmotion detection"]
-            VIA["VISION AGENT\nGemini Live API (Video)\nSign/gesture recognition\nPointing detection · Facial expr"]
-            CA["CONTEXT AGENT ★\nCode state from Monaco/Yjs\nReference resolver\nSession memory (Firestore)\nDisambiguation engine"]
-            VA & VIA & CA --> BA["BRIDGE AGENT ★ (Core IP)\nFuses all agent outputs + code context:\n→ Context-rich captions for deaf dev\n→ Synthesized speech for hearing dev\n→ Code annotation commands\n→ Confidence indicators\n→ Session summaries"]
+        subgraph Orchestrator["AGENT ORCHESTRATOR - Google ADK v1.26"]
+            VA["VOICE AGENT<br/>Gemini Live API Audio<br/>Stream ASR, Intent extraction<br/>Emotion detection"]
+            VisionA["VISION AGENT<br/>Gemini Live API Video<br/>Sign/gesture recognition<br/>Pointing detection, Facial expr"]
+            CA["CONTEXT AGENT - Custom<br/>Code state from Monaco/Yjs<br/>Reference resolver<br/>Session memory, Disambiguation"]
+            VA & VisionA & CA --> BA["BRIDGE AGENT - Custom, Core IP<br/>Fuses all agent outputs + code context<br/>Captions for deaf dev<br/>Synthesized speech for hearing dev<br/>Code annotations + Confidence indicators"]
         end
 
         GW --> Orchestrator
 
-        subgraph Data["DATA / STATE LAYER (all managed services)"]
-            FS["Firestore (NoSQL)\nSessions, Users, Vocabulary"]
-            MS["Memorystore (Redis 7)\nCode state cache, Agent msg queue"]
-            CS["Cloud Storage (Blobs)\nSession recordings, summaries"]
+        subgraph Data["DATA / STATE LAYER - managed services"]
+            FS["Firestore NoSQL<br/>Sessions, Users, Vocabulary"]
+            MS["Memorystore Redis 7<br/>Code state cache, Agent msg queue"]
+            CS["Cloud Storage Blobs<br/>Session recordings, summaries"]
         end
 
         Orchestrator --> Data
@@ -265,7 +265,7 @@ flowchart TD
     style Data fill:#e8f5e9
 ```
 
-> ★ = Custom code (our IP). Everything else is open-source or managed service.
+> Custom code (our IP) is marked above. Everything else is open-source or managed service.
 
 ---
 
@@ -280,7 +280,7 @@ Each agent has a single responsibility and communicates through the Bridge Agent
 
 ```mermaid
 flowchart LR
-    A["Audio Stream (WebSocket)"] --> B["Gemini Live API (streaming ASR + understanding)"]
+    A["Audio Stream via WebSocket"] --> B["Gemini Live API<br/>streaming ASR + understanding"]
     B --> C["Intent Extraction"]
     C --> D["Code Reference Detection"]
     D --> E["Emotion/Urgency Tagging"]
@@ -316,13 +316,13 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    A["Video Stream (WebSocket, 15-30 fps)"] --> B["Gemini Live API (multimodal vision, streaming)"]
+    A["Video Stream via WebSocket<br/>15-30 fps"] --> B["Gemini Live API<br/>multimodal vision, streaming"]
     B --> C["Frame Analysis"]
     C --> C1["Hand Tracking / Gesture Classification"]
     C --> C2["Sign Language Interpretation"]
     C --> C3["Pointing Direction Estimation"]
-    C --> C4["Facial Expression Analysis (ASL grammatical markers)"]
-    C1 & C2 & C3 & C4 --> D["Temporal Aggregation (signs are multi-frame)"]
+    C --> C4["Facial Expression Analysis<br/>ASL grammatical markers"]
+    C1 & C2 & C3 & C4 --> D["Temporal Aggregation<br/>signs are multi-frame"]
     D --> E["Structured Output to Bridge Agent"]
 ```
 
@@ -361,10 +361,10 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    A["Code Editor State\n(file, cursor, selection,\nvisible lines, recent changes)"] --> B["Context Agent"]
+    A["Code Editor State<br/>file, cursor, selection,<br/>visible lines, recent changes"] --> B["Context Agent"]
     B --> B1["Track open file, visible lines, highlights"]
     B --> B2["Maintain sliding window of discussed code entities"]
-    B --> B3["Resolve deictic references\n('this', 'that', pointing gestures)\nto code elements"]
+    B --> B3["Resolve deictic references<br/>to code elements"]
     B --> B4["Build conversation-code knowledge graph"]
     B1 & B2 & B3 & B4 --> C["Resolved Code References"]
 ```
@@ -398,21 +398,21 @@ flowchart LR
     I2["Vision Agent interpretations"] --> B
     I3["Context Agent resolutions"] --> B
     I4["Session history"] --> B
-    B --> O1["Deaf dev: Rich visual caption +\ncode annotations + confidence indicators"]
-    B --> O2["Hearing dev: Synthesized speech\n(Gemini TTS) + text backup"]
-    B --> O3["Shared editor: Highlight commands,\nannotation overlays"]
+    B --> O1["Deaf dev: Rich visual caption +<br/>code annotations + confidence indicators"]
+    B --> O2["Hearing dev: Synthesized speech<br/>Gemini TTS + text backup"]
+    B --> O3["Shared editor: Highlight commands,<br/>annotation overlays"]
 ```
 
 **Fusion Logic:**
 ```mermaid
 flowchart TD
-    A["1. Receive intent from Voice Agent or Vision Agent"] --> B["2. Query Context Agent to resolve code references"]
+    A["1. Receive intent from Voice or Vision Agent"] --> B["2. Query Context Agent to resolve code references"]
     B --> C["3. Enrich the message with resolved references"]
     C --> D{"4. Determine output target"}
-    D -->|Deaf dev| E["Visual: caption + highlighted code region + confidence badge"]
+    D -->|Deaf dev| E["Visual: caption + highlighted code + confidence badge"]
     D -->|Hearing dev| F["Audio: synthesized speech with natural prosody"]
-    C --> G{"5. Confidence < 0.7?"}
-    G -->|Yes| H["Add disambiguation prompt: 'Did you mean X or Y?'\nHighlight both possible code targets"]
+    C --> G{"5. Confidence below 0.7?"}
+    G -->|Yes| H["Add disambiguation prompt<br/>Highlight both possible code targets"]
     G -->|No| I["6. Append to session transcript"]
     H --> I
 ```
@@ -452,7 +452,7 @@ flowchart TD
         H1["Hearing Dev speaks"] --> H2["Voice Agent"]
         H2 -->|voice_intent| H3["Bridge Agent"]
         H4["Context Agent"] <-->|resolve references| H3
-        H3 --> H5["Caption + Code Highlight\n→ Deaf Dev's Screen"]
+        H3 --> H5["Caption + Code Highlight<br/>to Deaf Dev Screen"]
         H3 --> H6["Session Memory Update"]
     end
 
@@ -460,7 +460,7 @@ flowchart TD
         D1["Deaf Dev signs"] --> D2["Vision Agent"]
         D2 -->|vision_intent| D3["Bridge Agent"]
         D4["Context Agent"] <-->|resolve references| D3
-        D3 --> D5["Speech Synthesis\n→ Hearing Dev's Speakers"]
+        D3 --> D5["Speech Synthesis<br/>to Hearing Dev Speakers"]
         D3 --> D6["Session Memory Update"]
     end
 ```
@@ -561,23 +561,23 @@ sequenceDiagram
     participant HD as Hearing Dev
     participant Browser
     participant GW as API Gateway
-    participant VA as Voice Agent (Gemini Live API)
+    participant VA as Voice Agent
     participant BA as Bridge Agent
     participant CA as Context Agent
     participant DD as Deaf Dev UI
 
-    Note over HD,DD: Target: < 1.5 seconds end-to-end
+    Note over HD,DD: Target under 1.5 seconds end-to-end
 
-    HD->>Browser: Speaks into microphone (t=0ms)
-    Browser->>GW: Audio chunk via WebSocket (t=50-100ms)
-    GW->>VA: Route to Voice Agent (t=150ms)
-    Note over VA: Streaming ASR (~300ms)<br/>Intent extraction<br/>Code reference detection (t=150-800ms)
-    VA->>BA: voice_intent (t=800ms)
-    BA->>CA: Query code reference resolution (t=800-900ms)
-    CA-->>BA: Resolved references (current file, visible lines)
-    Note over BA: Generate rich caption +<br/>code highlight command +<br/>confidence: 0.94 (t=900-1000ms)
-    BA->>DD: Outputs via WebSocket (t=1000ms)
-    Note over DD: Caption appears<br/>Code editor highlights lines 34-67<br/>Sound Visualizer shows pattern (t=1050ms)
+    HD->>Browser: Speaks into microphone t=0ms
+    Browser->>GW: Audio chunk via WebSocket t=50-100ms
+    GW->>VA: Route to Voice Agent t=150ms
+    Note over VA: Streaming ASR at 300ms<br/>Intent extraction<br/>Code reference detection t=150-800ms
+    VA->>BA: voice_intent t=800ms
+    BA->>CA: Query code reference resolution t=800-900ms
+    CA-->>BA: Resolved references
+    Note over BA: Generate rich caption +<br/>code highlight command +<br/>confidence 0.94 t=900-1000ms
+    BA->>DD: Outputs via WebSocket t=1000ms
+    Note over DD: Caption appears<br/>Code editor highlights lines 34-67<br/>Sound Visualizer shows pattern t=1050ms
 ```
 
 ### 8.2 Deaf Developer Signs → Hearing Developer Hears
@@ -587,25 +587,25 @@ sequenceDiagram
     participant DD as Deaf Dev
     participant Browser
     participant GW as API Gateway
-    participant VIA as Vision Agent (Gemini Live API)
+    participant VIA as Vision Agent
     participant BA as Bridge Agent
     participant CA as Context Agent
     participant TTS as Gemini TTS
     participant HD as Hearing Dev
 
-    Note over DD,HD: Target: < 2 seconds end-to-end
+    Note over DD,HD: Target under 2 seconds end-to-end
 
-    DD->>Browser: Begins signing (t=0ms)
-    Browser->>GW: Video frames (15fps) via WebSocket (t=0-500ms)
-    GW->>VIA: Route to Vision Agent (t=150ms)
-    Note over VIA: Hand tracking + gesture classification<br/>Sign sequence aggregation<br/>Pointing direction estimation<br/>Facial expression analysis (t=150-1200ms)
-    VIA->>BA: vision_intent (t=1200ms)
-    BA->>CA: Resolve pointing + "this" (t=1200-1400ms)
-    CA-->>BA: Resolved references (confidence: 0.78)
+    DD->>Browser: Begins signing t=0ms
+    Browser->>GW: Video frames 15fps via WebSocket t=0-500ms
+    GW->>VIA: Route to Vision Agent t=150ms
+    Note over VIA: Hand tracking + gesture classification<br/>Sign sequence aggregation<br/>Pointing direction estimation<br/>Facial expression analysis t=150-1200ms
+    VIA->>BA: vision_intent t=1200ms
+    BA->>CA: Resolve pointing reference t=1200-1400ms
+    CA-->>BA: Resolved references, confidence 0.78
     Note over BA: Generate synthesized speech text<br/>Include alternatives for low-confidence
-    BA->>TTS: Speech synthesis via Gemini (t=1400-1600ms)
-    TTS->>HD: Audio + text backup (t=1600ms)
-    Note over HD: Hears synthesized speech (t=1700ms)
+    BA->>TTS: Speech synthesis via Gemini t=1400-1600ms
+    TTS->>HD: Audio + text backup t=1600ms
+    Note over HD: Hears synthesized speech t=1700ms
 ```
 
 ---
@@ -692,28 +692,28 @@ interface CodeReference {
 ```mermaid
 flowchart TD
     subgraph GCP["Google Cloud Platform"]
-        subgraph Compute["Cloud Run (Compute)"]
-            APIGw["API Gateway Service\nFastAPI · WebSocket · Auth\nMin: 1 / Max: 10 instances\n2 vCPU · 2 GB RAM"]
-            Workers["Agent Workers Service\nADK Orchestrator\nVoice/Vision/Context/Bridge Agents\nGemini Live API clients\nMin: 1 / Max: 20 instances\n4 vCPU · 8 GB RAM"]
+        subgraph Compute["Cloud Run - Compute"]
+            APIGw["API Gateway Service<br/>FastAPI, WebSocket, Auth<br/>Min: 1 / Max: 10 instances<br/>2 vCPU, 2 GB RAM"]
+            Workers["Agent Workers Service<br/>ADK Orchestrator<br/>Voice/Vision/Context/Bridge Agents<br/>Gemini Live API clients<br/>Min: 1 / Max: 20 instances<br/>4 vCPU, 8 GB RAM"]
         end
 
         subgraph DataSvc["Data Services"]
-            FS2["Firestore (NoSQL DB)\nSessions, Users, Vocabulary"]
-            MS2["Memorystore (Redis)\nCode state cache, Pub/Sub"]
-            CS2["Cloud Storage (Blobs)\nSession recordings, summaries"]
+            FS2["Firestore NoSQL DB<br/>Sessions, Users, Vocabulary"]
+            MS2["Memorystore Redis<br/>Code state cache, Pub/Sub"]
+            CS2["Cloud Storage Blobs<br/>Session recordings, summaries"]
         end
 
         subgraph AI["AI Services"]
-            Gemini["Gemini 2.5 Pro (via Vertex AI / GenAI SDK)\nLive API: Streaming audio + video\nMultimodal understanding: Sign interpretation\nText generation: Caption enrichment\nSpeech synthesis: Voice output"]
+            Gemini["Gemini 2.5 Pro via Vertex AI<br/>Live API: Streaming audio + video<br/>Multimodal understanding<br/>Text generation + Speech synthesis"]
         end
 
         subgraph Net["Networking"]
-            LB["Cloud Load Balancer"] --> Armor["Cloud Armor (DDoS)"] --> Compute
-            CDN["Cloud CDN for static frontend assets"]
+            LB["Cloud Load Balancer"] --> Armor["Cloud Armor DDoS"] --> Compute
+            CDN["Cloud CDN for static frontend"]
         end
 
         subgraph Obs["Observability"]
-            Logging["Cloud Logging · Cloud Monitoring · Cloud Trace\nCustom Metrics: latency_p95, sign_confidence_avg,\ndisambiguation_rate, session_duration"]
+            Logging["Cloud Logging, Monitoring, Trace<br/>Custom Metrics: latency_p95,<br/>sign_confidence_avg, disambiguation_rate"]
         end
     end
 
@@ -810,9 +810,9 @@ GUARDRAIL_CONFIG = {
 
 ```mermaid
 flowchart TD
-    A["Full Experience\n(all systems nominal)"] -->|Vision Agent fails| B["Partial Experience\n(voice → captions works,\ndeaf dev types instead of signs)"]
-    B -->|Voice Agent also fails| C["Text-Only Mode\n(both devs type, agent provides\ncode-context enrichment)"]
-    C -->|All agents fail| D["Raw Mode\n(basic code editor collaboration,\nno AI, just shared editor)"]
+    A["Full Experience<br/>all systems nominal"] -->|Vision Agent fails| B["Partial Experience<br/>voice to captions works,<br/>deaf dev types instead of signs"]
+    B -->|Voice Agent also fails| C["Text-Only Mode<br/>both devs type, agent provides<br/>code-context enrichment"]
+    C -->|All agents fail| D["Raw Mode<br/>basic code editor collaboration,<br/>no AI, just shared editor"]
 
     style A fill:#c8e6c9
     style B fill:#fff9c4
@@ -930,10 +930,10 @@ infrastructure/
 ```mermaid
 flowchart LR
     A["git push"] --> B["Cloud Build Trigger"]
-    B --> C["Build frontend → Cloud Storage\n(static hosting)"]
-    B --> D["Build backend container\n→ Artifact Registry"]
+    B --> C["Build frontend to Cloud Storage<br/>static hosting"]
+    B --> D["Build backend container<br/>to Artifact Registry"]
     B --> E["Run tests"]
-    B --> F["Deploy to Cloud Run\n(rolling update)"]
+    B --> F["Deploy to Cloud Run<br/>rolling update"]
 ```
 
 ### Environment Configuration
