@@ -24,26 +24,26 @@
   <!-- Frontend -->
   <rect x="40" y="70" width="220" height="140" class="box"/>
   <text x="150" y="92" text-anchor="middle" class="title">Frontend (React)</text>
-  <text x="150" y="110" text-anchor="middle" class="label">" Monaco Editor (shared code)</text>
-  <text x="150" y="125" text-anchor="middle" class="label">" Communication Panel</text>
-  <text x="150" y="140" text-anchor="middle" class="label">" Yjs CRDT sync</text>
-  <text x="150" y="155" text-anchor="middle" class="label">" Web Speech API</text>
+  <text x="150" y="110" text-anchor="middle" class="label">&#x2022;Monaco Editor (shared code)</text>
+  <text x="150" y="125" text-anchor="middle" class="label">&#x2022;Communication Panel</text>
+  <text x="150" y="140" text-anchor="middle" class="label">&#x2022;Yjs CRDT sync</text>
+  <text x="150" y="155" text-anchor="middle" class="label">&#x2022;Web Speech API</text>
   <text x="150" y="175" text-anchor="middle" class="sub">VideoPanel (LiveKit placeholder)</text>
 
   <!-- Backend -->
   <rect x="300" y="70" width="200" height="140" class="box"/>
   <text x="400" y="92" text-anchor="middle" class="title">Backend (FastAPI)</text>
-  <text x="400" y="110" text-anchor="middle" class="label">" WebSocket /ws/media</text>
-  <text x="400" y="125" text-anchor="middle" class="label">" WebSocket /ws/agent</text>
-  <text x="400" y="140" text-anchor="middle" class="label">" Gemini Live API</text>
-  <text x="400" y="155" text-anchor="middle" class="label">" Gemini TTS</text>
+  <text x="400" y="110" text-anchor="middle" class="label">&#x2022;WebSocket /ws/media</text>
+  <text x="400" y="125" text-anchor="middle" class="label">&#x2022;WebSocket /ws/agent</text>
+  <text x="400" y="140" text-anchor="middle" class="label">&#x2022;Gemini Live API</text>
+  <text x="400" y="155" text-anchor="middle" class="label">&#x2022;Gemini TTS</text>
   <text x="400" y="175" text-anchor="middle" class="sub">google-genai SDK</text>
 
   <!-- Gemini -->
   <rect x="540" y="70" width="220" height="140" class="box"/>
   <text x="650" y="92" text-anchor="middle" class="title">Google AI (Gemini)</text>
-  <text x="650" y="110" text-anchor="middle" class="label">" Live API (audio ’ captions)</text>
-  <text x="650" y="125" text-anchor="middle" class="label">" TTS (text ’ speech)</text>
+  <text x="650" y="110" text-anchor="middle" class="label">Live API (audio to captions)</text>
+  <text x="650" y="125" text-anchor="middle" class="label">TTS (text to speech)</text>
   <text x="650" y="155" text-anchor="middle" class="sub">gemini-2.5-flash-*</text>
 
   <!-- Arrows -->
@@ -54,11 +54,11 @@
   <rect x="40" y="250" width="720" height="120" class="box"/>
   <text x="400" y="272" text-anchor="middle" class="title">Data Flow</text>
   <text x="120" y="295" text-anchor="middle" class="label">Hearing Dev</text>
-  <text x="120" y="310" text-anchor="middle" class="sub">Mic ’ PCM ’ /ws/media</text>
-  <text x="120" y="330" text-anchor="middle" class="sub">’ Gemini Live ’ captions</text>
+  <text x="120" y="310" text-anchor="middle" class="sub">Mic &gt; PCM &gt; /ws/media</text>
+  <text x="120" y="330" text-anchor="middle" class="sub">&gt; Gemini Live &gt; captions</text>
   <text x="400" y="295" text-anchor="middle" class="label">Deaf Dev</text>
-  <text x="400" y="310" text-anchor="middle" class="sub">Type ’ /ws/agent</text>
-  <text x="400" y="330" text-anchor="middle" class="sub">’ Gemini TTS ’ speech</text>
+  <text x="400" y="310" text-anchor="middle" class="sub">Type &gt; /ws/agent</text>
+  <text x="400" y="330" text-anchor="middle" class="sub">&gt; Gemini TTS &gt; speech</text>
   <text x="680" y="295" text-anchor="middle" class="label">Shared Editor</text>
   <text x="680" y="310" text-anchor="middle" class="sub">Yjs WebSocket</text>
   <text x="680" y="330" text-anchor="middle" class="sub">Real-time CRDT</text>
@@ -66,6 +66,6 @@
   <!-- GCP -->
   <rect x="240" y="400" width="320" height="70" class="box"/>
   <text x="400" y="422" text-anchor="middle" class="title">Google Cloud (Deploy)</text>
-  <text x="400" y="442" text-anchor="middle" class="label">Cloud Run " Terraform</text>
+  <text x="400" y="442" text-anchor="middle" class="label">Cloud Run + Terraform</text>
   <text x="400" y="458" text-anchor="middle" class="sub">infrastructure/</text>
 </svg>
